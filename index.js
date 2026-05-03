@@ -41,9 +41,10 @@ app.get("/api/search", async (req, res) => {
   actif: p.actif
 }))
     .filter(p =>
-      p.actif === "1" &&
-      query.includes(p.licence.toLowerCase())
-    );
+  p.actif === "1" &&
+  p.licence &&
+  query.includes(p.licence.toLowerCase())
+);
 
   res.json(results);
 });
