@@ -36,6 +36,7 @@ app.get("/api/search", async (req, res) => {
       query.includes(p.licence.toLowerCase())
     );
 
+  console.log(data[0]);
   res.json(results);
 });
 
