@@ -1,10 +1,11 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
 
-app.get("/api/search", async (req, res) => {
+app.use(cors());
 
-    const query = req.query.q || "anime";
+app.get("/api/search", async (req, res) => {
 
     res.json([
         {
