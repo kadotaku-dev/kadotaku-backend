@@ -6,11 +6,20 @@ app.use(cors());
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
 
-function parseCSV(text){
-  return text.split("\n").map(r =>
-    r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
-    ?.map(c => c.replace(/"/g,"").trim()) || []
-  );
+function parseCSV(text) {
+  const lines = text.split("\n");
+  const headers = lines[0].split(",");
+
+  return lines.slice(1).map(line => {
+    const values = line.split(",");
+    let obj = {};
+
+    headers.forEach((h, i) => {
+      obj[h.trim()] = values[i]?.trim();
+    });
+
+    return obj;
+  });
 }
 
 app.get("/api/search", async (req, res) => {
@@ -23,14 +32,14 @@ app.get("/api/search", async (req, res) => {
   data.shift();
 
   const results = data
-    .map(r => ({
-      licence: r[0],
-      name: r[2] || "",
-      price: r[3],
-      image: r[4],
-      url: r[5],
-      actif: r[7]
-    }))
+    .map(p => ({
+  licence: p.licence,
+  name: p.nom,
+  price: p.prix,
+  image: p.image,
+  url: p.lien,
+  actif: p.actif
+}))
     .filter(p =>
       p.actif === "1" &&
       query.includes(p.licence.toLowerCase())
