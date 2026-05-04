@@ -25,7 +25,7 @@ app.get("/api/search", async (req, res) => {
   const results = data
     .map(r => ({
       licence: r[0],
-      name: r[2] || r[1] || "Produit",
+      name: r[2],
       price: r[3],
       image: r[4],
       url: r[5],
