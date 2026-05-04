@@ -21,6 +21,9 @@ app.get("/api/search", async (req, res) => {
     const response = await fetch(SHEET_URL);
     const text = await response.text();
     const rows = parseCSV(text);
+    console.log("HEADER:", rows[0]);
+console.log("FIRST ROW:", rows[1]);
+
 
     const headers = rows.shift(); // lit les noms de colonnes
 
