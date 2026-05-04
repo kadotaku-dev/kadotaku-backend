@@ -5,13 +5,6 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
-import express from "express";
-import cors from "cors";
-
-const app = express();
-app.use(cors());
-
-const PORT = process.env.PORT || 3000;
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/edit?usp=sharing";
 
