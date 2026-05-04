@@ -15,25 +15,35 @@ app.get("/api/search", async (req, res) => {
     const response = await fetch(SHEET_URL);
     const text = await response.text();
 
-    const lines = text.split("\n").filter(l => l.trim() !== "");
+    const rows = text.split("\n").slice(1); // ignore header
 
-    // parser CSV robuste (gère les virgules et guillemets)
-    const data = lines.slice(1).map(line => {
-      const cols = line
-        .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-        .map(c => c.replace(/^"|"$/g, "").trim());
+    const results = rows.map(row => {
+      const cols = row.split(",");
 
       return {
         licence: cols[0],
-        type: cols[1],
-        name: cols[2],     // ✅ ton nom est ici
+        name: cols[2],
         price: cols[3],
         image: cols[4],
         url: cols[5],
-        priority: cols[6],
         actif: cols[7]
       };
-    });
+    }).filter(p =>
+      p.actif === "1" &&
+      p.name &&
+      p.price &&
+      p.image &&
+      p.url &&
+      query.includes((p.licence || "").toLowerCase())
+    );
+
+    res.json(results);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur serveur");
+  }
+});
 
     const results = data.filter(p =>
       p.actif === "1" &&
