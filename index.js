@@ -6,7 +6,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTBCZTUX7UZQ4bLuhX59BhHVQw5JcU6omsZwE7y95gs3rDPzD3oliudIecG0bbalHkHzZbxJI3VXdj/pub?gid=306515503&single=true&output=csv";
 
 function parseCSV(text){
   return text.split("\n").map(r =>
