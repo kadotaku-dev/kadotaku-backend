@@ -14,28 +14,40 @@ function parseCSV(text){
 }
 
 app.get("/api/search", async (req, res) => {
-  const query = req.query.q.toLowerCase();
+  try {
+    const query = req.query.q.toLowerCase();
 
-  const response = await fetch(SHEET_URL);
-  const text = await response.text();
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
 
-  let data = parseCSV(text);
-  data.shift();
-
-  const results = data
-    .map(r => ({
-  licence: r[0],
-  name: r[2],
-  price: r[3],
-  image: r[4],
-  url: r[5]
-}))
-    .filter(p =>
-      p.actif === "1" &&
-      query.includes(p.licence.toLowerCase())
+    const data = text.split("\n").map(r =>
+      r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
+      ?.map(c => c.replace(/"/g,"").trim()) || []
     );
 
-  res.json(results);
+    data.shift(); // enlève header
+
+    const results = data
+      .map(r => ({
+        licence: r[0],
+        name: r[2],
+        price: r[3],
+        image: r[4],
+        url: r[5],
+        actif: r[7]
+      }))
+      .filter(p =>
+        p.actif === "1" &&
+        p.licence &&
+        query.includes(p.licence.toLowerCase())
+      );
+
+    res.json(results);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur serveur");
+  }
 });
 
 app.listen(3000, () => console.log("API running"));
