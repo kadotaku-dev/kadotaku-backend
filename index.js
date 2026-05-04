@@ -4,9 +4,7 @@ import cors from "cors";
 const app = express();
 app.use(cors());
 
-const PORT = process.env.PORT || 3000;
-
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTBCZTUX7UZQ4bLuhX59BhHVQw5JcU6omsZwE7y95gs3rDPzD3oliudIecG0bbalHkHzZbxJI3VXdj/pub?gid=306515503&single=true&output=csv";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
 
 function parseCSV(text){
   return text.split("\n").map(r =>
@@ -16,38 +14,29 @@ function parseCSV(text){
 }
 
 app.get("/api/search", async (req, res) => {
-  try {
-    const query = (req.query.q || "").toLowerCase();
+  const query = req.query.q.toLowerCase();
 
-    const response = await fetch(SHEET_URL);
-    const text = await response.text();
+  const response = await fetch(SHEET_URL);
+  const text = await response.text();
 
-    let data = parseCSV(text);
-    data.shift();
+  let data = parseCSV(text);
+  data.shift();
 
-    const results = data
-      .map(r => ({
-        licence: r[0],
-        name: r[2],
-        price: r[3],
-        image: r[4],
-        url: r[5],
-        actif: r[7]
-      }))
-      .filter(p =>
-        p.actif === "1" &&
-        p.licence &&
-        query.includes(p.licence.toLowerCase())
-      );
+  const results = data
+    .map(r => ({
+      licence: r[0],
+      name: r[2],
+      price: r[3],
+      image: r[4],
+      url: r[5],
+      actif: r[7]
+    }))
+    .filter(p =>
+      p.actif === "1" &&
+      query.includes(p.licence.toLowerCase())
+    );
 
-    res.json(results);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Erreur serveur");
-  }
+  res.json(results);
 });
 
-app.listen(PORT, () => {
-  console.log("API running on port", PORT);
-});
+app.listen(3000, () => console.log("API running"));
