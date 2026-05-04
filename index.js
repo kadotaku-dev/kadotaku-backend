@@ -21,8 +21,6 @@ app.get("/api/search", async (req, res) => {
 
   let data = parseCSV(text);
   data.shift();
-
-  console.log("SAMPLE ROW:", data[0]);
   
   const results = data
     .map(r => ({
