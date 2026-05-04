@@ -4,15 +4,9 @@ import cors from "cors";
 const app = express();
 app.use(cors());
 
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
+const PORT = process.env.PORT || 3000;
 
-function parseCSV(text) {
-  return text.split("\n").map(r =>
-    r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
-      ?.map(c => c.replace(/"/g, "").trim()) || []
-  );
-}
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/edit?usp=sharing"; // ⚠️ mets ton vrai lien
 
 app.get("/api/search", async (req, res) => {
   try {
@@ -20,56 +14,44 @@ app.get("/api/search", async (req, res) => {
 
     const response = await fetch(SHEET_URL);
     const text = await response.text();
-    const rows = parseCSV(text);
-    console.log("HEADER:", rows[0]);
-console.log("FIRST ROW:", rows[1]);
 
+    const lines = text.split("\n").filter(l => l.trim() !== "");
 
-    const headers = rows.shift(); // lit les noms de colonnes
+    // parser CSV robuste (gère les virgules et guillemets)
+    const data = lines.slice(1).map(line => {
+      const cols = line
+        .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+        .map(c => c.replace(/^"|"$/g, "").trim());
 
-    // Création d’un objet { colonne: valeur } fiable
-    const products = rows.map(row => {
-      const obj = {};
-      headers.forEach((h, i) => {
-        obj[h.toLowerCase()] = row[i] || "";
-      });
-      return obj;
+      return {
+        licence: cols[0],
+        type: cols[1],
+        name: cols[2],     // ✅ ton nom est ici
+        price: cols[3],
+        image: cols[4],
+        url: cols[5],
+        priority: cols[6],
+        actif: cols[7]
+      };
     });
 
-    // On ne garde que les colonnes utiles
-    const cleaned = products.map(p => ({
-      licence: p.licence,
-      nom: p.nom,
-      prix: p.prix,
-      image: p.image,
-      lien: p.lien,
-      actif: p.actif
-    }));
-
-    // Filtre : uniquement produits complets
-    let results = cleaned.filter(p =>
+    const results = data.filter(p =>
       p.actif === "1" &&
-      p.licence &&
-      p.nom &&
-      p.prix &&
+      p.name &&
+      p.price &&
       p.image &&
-      p.lien
+      p.url &&
+      query.includes((p.licence || "").toLowerCase())
     );
-
-    // Filtre recherche
-    if (query.length > 0) {
-      results = results.filter(p =>
-        [p.licence, p.nom]
-          .some(field => field.toLowerCase().includes(query))
-      );
-    }
 
     res.json(results);
 
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("Erreur API:", error);
     res.status(500).send("Erreur serveur");
   }
 });
 
-app.listen(3000, () => console.log("API running"));
+app.listen(PORT, () => {
+  console.log("API running on port", PORT);
+});
