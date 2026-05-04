@@ -6,7 +6,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/edit?usp=sharing";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
 
 function parseCSV(text){
   return text.split("\n").map(r =>
@@ -23,12 +23,12 @@ app.get("/api/search", async (req, res) => {
     const text = await response.text();
 
     let data = parseCSV(text);
-    data.shift(); // enlève header
+    data.shift();
 
     const results = data
       .map(r => ({
         licence: r[0],
-        name: r[2],   // ⚠️ ici le bug original
+        name: r[2],
         price: r[3],
         image: r[4],
         url: r[5],
@@ -47,20 +47,6 @@ app.get("/api/search", async (req, res) => {
     res.status(500).send("Erreur serveur");
   }
 });
-
-app.listen(PORT, () => {
-  console.log("API running on port", PORT);
-});
-app.get("/api/search", (req, res) => {
-  res.json([
-    {
-      licence: "One Piece",
-      name: "Test produit",
-      price: "10€",
-      image: "https://via.placeholder.com/150",
-      url: "#"
-    }
-  ]);
 
 app.listen(PORT, () => {
   console.log("API running on port", PORT);
