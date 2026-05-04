@@ -24,13 +24,12 @@ app.get("/api/search", async (req, res) => {
 
   const results = data
     .map(r => ({
-      licence: r[0],
-      name: r[2],
-      price: r[3],
-      image: r[4],
-      url: r[5],
-      actif: r[7]
-    }))
+  licence: r[0],
+  name: JSON.stringify(r),   // 🔥 TEMPORAIRE
+  price: r[3],
+  image: r[4],
+  url: r[5]
+}))
     .filter(p =>
       p.actif === "1" &&
       query.includes(p.licence.toLowerCase())
