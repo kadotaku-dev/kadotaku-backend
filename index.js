@@ -16,7 +16,6 @@ app.get("/api/search", (req, res) => {
       url: "#"
     }
   ]);
-});
 
 app.listen(PORT, () => {
   console.log("API running on port", PORT);
