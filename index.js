@@ -37,10 +37,14 @@ app.get("/api/search", async (req, res) => {
         actif: r[7]
       }))
       .filter(p =>
-        p.actif === "1" &&
-        p.licence &&
-        query.includes(p.licence.toLowerCase())
-      );
+  p.actif === "1" &&
+  p.licence &&
+  p.name &&
+  p.price &&
+  p.image &&
+  p.url &&
+  query.includes(p.licence.toLowerCase())
+);
 
     res.json(results);
 
