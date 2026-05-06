@@ -18,7 +18,9 @@ app.get("/api/search", async (req, res) => {
 
     const query = (req.query.q || "").toLowerCase();
 
-    const response = await fetch(SHEET_URL);
+    const response = await fetch(SHEET_URL).catch(err => {
+  console.error("FETCH ERROR:", err);
+});
     const text = await response.text();
 
     let data = parseCSV(text);
