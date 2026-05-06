@@ -55,4 +55,7 @@ app.get("/api/search", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
+app.get("/", (req, res) => {
+  res.send("OK");
+});
 app.listen(PORT, () => console.log("API running on", PORT));
