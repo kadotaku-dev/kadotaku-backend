@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 
+console.log("SERVER START");
+
 const app = express();
 app.use(cors());
 
