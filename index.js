@@ -1,9 +1,11 @@
+import compression from "compression";
 import express from "express";
 import cors from "cors";
 
 const app = express();
 
 app.use(cors());
+app.use(compression());
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/1BWocFxHiryFhBqCUSQGm3JYqD9LbjZfL8K4nKqUUqrM/gviz/tq?tqx=out:csv&sheet=produits";
